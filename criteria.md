@@ -23,8 +23,8 @@ For at least 4 of my 5 test questions, the retrieved chunks include one that
 contains the answer.
 
 **Why this target:**
-<!-- e.g. "One of my questions is about a topic only two documents mention, so
-     I expect that one to be hard." -->
+I chose 4 of 5 because each question has a clearly matching advice thread, but
+one question could still be harder if retrieval favors a nearby topic.
 
 ---
 
@@ -33,8 +33,9 @@ contains the answer.
 Every answer the system produces names at least one source document.
 
 **Why this target:**
-<!-- Why all five and not four? What about your setup makes that achievable —
-     or what would have to go wrong for it not to be? -->
+I chose all five because every answer is generated from retrieved documents and
+the answer template already receives source metadata. Missing a source should
+therefore be a detectable formatting or generation failure.
 
 ---
 
@@ -50,8 +51,9 @@ in at least 4 of 5 tries.
      just keep five of them, or the "4 of 5" above has nothing to be 4 of. -->
 
 **Why this target:**
-<!-- What did your distances look like when you set the cutoff in Milestone 4?
-     Was there a clean gap, or did the two groups overlap? -->
+I chose 4 of 5 because the out-of-scope questions are unrelated to student
+advice, but one could accidentally resemble a document closely enough to pass
+the cutoff.
 
 ---
 
@@ -69,10 +71,15 @@ in at least 4 of 5 tries.
        - "No chunk is shorter than 200 characters, since anything below that
           in my corpus turned out to be a heading with no content under it." -->
 
+At least 4 of 5 sampled chunks should express a complete thought without
+cutting a sentence in half at either end.
+
 
 
 **Why this target:**
 
+I chose 4 of 5 because the advice threads are short and usually organized as
+complete replies, but a chunk boundary may still split one longer reply.
 
 
 ---
@@ -87,10 +94,16 @@ in at least 4 of 5 tries.
      present — anything, as long as it names a number or an observable
      outcome. -->
 
+For at least 4 of my 5 test questions, the cited source document should be the
+document that actually contains the expected answer phrase.
+
 
 
 **Why this target:**
 
+I care about trustworthy attribution, not just answers that happen to sound
+plausible. I chose 4 of 5 because one question may retrieve a related thread
+with overlapping advice even when the answer is mostly correct.
 
 
 ---
