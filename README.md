@@ -21,16 +21,22 @@
 
 ## What This Does
 
-<!-- Three or four sentences. Which corpus you picked, and the kinds of
-     questions your system answers. Write it for someone who has never seen
-     this repo.
-
-     Milestone 5. -->
+This system answers practical student-life questions using the `advice_threads`
+corpus. It retrieves the most relevant student discussion, checks whether the
+best match is close enough to the question, and refuses questions that are
+outside the corpus. For supported questions, a language model writes a brief
+answer using only the retrieved documents and names the source file.
 
 ## Chunking Strategy
 
-**Chunk size:**
-**Overlap:**
+**Chunk size:** 800 characters
+**Overlap:** 0 characters
+
+The advice-thread documents are already short, focused conversations. Their
+lengths range from 317 to 793 characters, so keeping each thread together
+preserves the question, replies, and context needed to answer it. I used a
+paragraph-aware limit of 800 characters to avoid the starter's 2-character
+tail chunk while still giving longer documents a safe paragraph boundary.
 
 <!-- What about YOUR documents made you pick these numbers? Short posts and
      long sectioned guides don't want the same chunking, and "800 seemed
@@ -53,29 +59,99 @@
 
      Milestone 3. -->
 
-**Chunk 1** — source: `` — produced by: ``
+**Chunk 1** — source: `thread_bike_commute.txt#0` — produced by: `chunker.py::split_documents`
 
 ```
+THREAD: Is a bike worth it for a 20 minute walk commute?
+
+--- reply 1 (14 votes) ---
+Yeah. Cuts an 18 minute walk to about 6. The thing nobody mentions is storage —
+covered bike parking exists at three buildings and is full by 9am at all three.
+
+--- reply 2 (9 votes) ---
+Counterpoint, I sold mine. Between November and March the paths are either icy or
+salted and salt destroys a drivetrain in one season.
+
+--- reply 3 (22 votes) ---
+Both true. I keep a cheap bike for September to November and walk the rest of the
+year. Total cost was about $120 for the bike and I don't care what happens to it.
+
+--- reply 4 (5 votes) ---
+If you do get one, the campus does free registration and it's the only reason I
+got mine back after it was taken.
 ```
 
-**Chunk 2** — source: `` — produced by: ``
+**Chunk 2** — source: `thread_first_gen.txt#0` — produced by: `chunker.py::split_documents`
 
 ```
+THREAD: Anything specific for first-generation students?
+
+--- reply 1 (33 votes) ---
+The advising office has a specific programme and it is genuinely good, but it is
+opt-in and badly publicised. Ask for it by name.
+
+--- reply 2 (41 votes) ---
+The thing I'd say: the unwritten rules are the hard part, not the coursework. Ask
+about the unwritten rules explicitly. People are happy to explain them and nobody
+volunteers them.
+
+--- reply 3 (16 votes) ---
+Emergency fund for textbooks and travel exists and is not means-tested beyond a
+short form.
 ```
 
-**Chunk 3** — source: `` — produced by: ``
+**Chunk 3** — source: `thread_laptop_specs.txt#0` — produced by: `chunker.py::split_documents`
 
 ```
+THREAD: How much laptop do I actually need for CS courses?
+
+--- reply 1 (31 votes) ---
+Less than the recommended spec page says. 16GB of RAM is the one number worth
+paying for; everything else you'll never notice.
+
+--- reply 2 (18 votes) ---
+Adding: the lab machines exist and are better than anything you'll buy. For the
+heavy assignments people just use those.
+
+--- reply 3 (12 votes) ---
+I did two years on an 8GB machine and it was fine until the last project, at which
+point it very much wasn't. 16 is the answer.
 ```
 
-**Chunk 4** — source: `` — produced by: ``
+**Chunk 4** — source: `thread_office_hours_etiquette.txt#0` — produced by: `chunker.py::split_documents`
 
 ```
+THREAD: Is it weird to go to office hours with no specific question?
+
+--- reply 1 (44 votes) ---
+No, and this is the single most common thing first years get wrong. 'I'm following
+the lectures but I don't feel like I understand the shape of it' is a completely
+normal thing to say.
+
+--- reply 2 (29 votes) ---
+They're usually empty. You are doing the instructor a favour by turning up.
+
+--- reply 3 (18 votes) ---
+If it helps, treat it as a standing appointment. Go every week for a month and it
+stops feeling like a thing.
 ```
 
-**Chunk 5** — source: `` — produced by: ``
+**Chunk 5** — source: `thread_professor_email.txt#0` — produced by: `chunker.py::split_documents`
 
 ```
+THREAD: Do professors actually answer email?
+
+--- reply 1 (21 votes) ---
+Varies enormously. General rule I've found: if the syllabus states a response
+window, it's honoured. If it doesn't, assume 48 hours and don't panic before then.
+
+--- reply 2 (33 votes) ---
+Office hours are dramatically more effective than email for anything that takes
+more than two sentences to answer. They're also usually empty.
+
+--- reply 3 (15 votes) ---
+Empty office hours is the biggest unused resource here and I say that having
+wasted a year not going.
 ```
 
 ## Sample Answer
@@ -83,14 +159,26 @@
 <!-- One complete question and answer, pasted as text, with the source line
      visible. Milestone 4. -->
 
-**Question:**
+**Question:** What laptop memory do students say is worth paying for in CS courses?
 
-**Answer:**
+**Answer:** Students say that 16GB of RAM is worth paying for in CS courses.
+
+**Source:** `thread_laptop_specs.txt`
 
 ```
+Students say that 16GB of RAM is worth paying for in CS courses.
+
+Source: thread_laptop_specs.txt
 ```
 
 **My relevance cutoff:**
+
+I set the cutoff to **0.65**. The five in-corpus questions had best distances
+from 0.2090 to 0.4806, while the five out-of-scope questions ranged from
+0.8280 to 0.9517. The gap between 0.4806 and 0.8280 means 0.65 accepts the
+covered questions while refusing the unrelated ones. I kept `TOP_K = 5` because
+the correct chunk was in the top result for all five covered questions, while
+the remaining results provide useful context for grounded answers.
 
 <!-- The number you set in config.py, and how you got there.
 
@@ -103,7 +191,16 @@
 
 | Question | In corpus? | Best distance |
 |---|---|---|
-|  |  |  |
+| What laptop memory do students say is worth paying for in CS courses? | Yes | 0.2090 |
+| How long do students suggest waiting before worrying that a professor has not answered an email? | Yes | 0.4108 |
+| What happens to the printing quota between semesters? | Yes | 0.3482 |
+| What is the main storage-related problem with commuting by bike to campus? | Yes | 0.3732 |
+| Is it acceptable to attend office hours without a specific question? | Yes | 0.4806 |
+| What is the capital of Mongolia? | No | 0.9479 |
+| How do I change the oil in a diesel engine? | No | 0.9299 |
+| Who won the 1994 World Cup? | No | 0.9517 |
+| What is the recommended dosage of ibuprofen for a headache? | No | 0.8280 |
+| How do I write a for loop in Rust? | No | 0.8712 |
 
 ## How I Used AI
 
@@ -118,7 +215,18 @@
 
 **1.**
 
+I asked an AI assistant to inspect the starter chunker and help pressure-test
+whether fixed 800-character windows fit the advice-thread corpus. It confirmed
+that the starter produced a 2-character tail chunk, so I changed the strategy
+to keep each short thread together at paragraph boundaries, with no overlap.
+
 **2.**
+
+I asked an AI assistant to help check the retrieval results and cutoff choice
+for the five covered and five out-of-scope questions. The measured distances
+showed a gap between 0.4806 and 0.8280, so I chose a 0.65 cutoff and tightened
+the grounding instruction to require an exact refusal for unsupported answers
+and a filename for supported answers.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
