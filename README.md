@@ -380,9 +380,13 @@ strength without changing the original target after seeing the results.
 
 ## The Improvement
 
-**What I changed:**
+**What I changed:** I lowered the relevance-gate cutoff in `config.py` from
+`0.65` to `0.60`.
 
-**Why I picked it:**
+**Why I picked it:** The diagnosis found no misses, but the original cutoff was
+looser than necessary. The measured best-distance groups had a covered maximum
+of `0.4806` and an out-of-scope minimum of `0.8280`, so `0.60` tightens the
+gate while remaining safely between the groups.
 
 <!-- Connect it to a specific diagnosis above in one sentence. If you can't,
      you picked a fix because it sounded impressive. -->
@@ -394,13 +398,33 @@ strength without changing the original target after seeing the results.
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Sampled chunks express complete thoughts | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Cited source contains the expected answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+
+After-run evidence is in `results/run_2026-09-23_1618_after.md`, produced by
+`run_eval.py::main` and `run_eval.py::check_out_of_scope`. It records the new
+`0.6` cutoff, 15 uncached answers, and `Refused 5 of 5` for the out-of-scope
+questions. For example, the laptop question still produced:
+
+```
+Students say that 16GB of RAM is worth paying for in CS courses.
+
+Source: thread_laptop_specs.txt
+```
+
+The other four questions likewise returned their expected answer and named
+their supporting source in all three runs.
 
 **Did it help?**
+
+It preserved the results but did not improve the criterion counts: before and
+after both scored 5/5 on all five criteria and refused 5/5 out-of-scope
+questions. The change still makes the gate stricter, because a result must now
+be below `0.60`, but the existing distance gap was already large enough that no
+test outcome changed.
 
 <!-- Say plainly whether it did, and how you know. If it made things worse,
      say that — a change that backfired, honestly reported, earns full credit
