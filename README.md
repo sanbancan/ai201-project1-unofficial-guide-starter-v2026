@@ -255,11 +255,72 @@ and a filename for supported answers.
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Sampled chunks express complete thoughts | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Cited source contains the expected answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+
+### Evidence from the before run
+
+Source: `results/run_2026-09-23_1610_before.md`, produced by
+`run_eval.py::main` and `run_eval.py::check_out_of_scope`.
+
+**Criterion 1 — retrieved chunks contain the answer:**
+
+The report shows the top result for each question contains the expected answer.
+For example, the first question returned:
+
+```
+Students say that 16GB of RAM is worth paying for in CS courses.
+
+Source: thread_laptop_specs.txt
+```
+
+The same report shows the other four answer-bearing top sources as
+`thread_professor_email.txt`, `thread_printing.txt`, `thread_bike_commute.txt`,
+and `thread_office_hours_etiquette.txt`. Therefore each run scored 5/5.
+
+**Criterion 2 — every answer names a source:**
+
+The report's answer output includes a source for every run. One example is:
+
+```
+The printing quota does not roll over between semesters (thread_printing.txt).
+```
+
+All 15 answers named a source document, so each run scored 5/5.
+
+**Criterion 3 — the gate stops out-of-corpus questions:**
+
+The report produced by `run_eval.py::check_out_of_scope` says:
+
+```
+Produced by `run_eval.py::check_out_of_scope`, cutoff 0.65. Refused 5 of 5.
+```
+
+Because retrieval is deterministic, that 5/5 result is recorded in all three
+run columns.
+
+**Criterion 4 — chunks express complete thoughts:**
+
+The five samples printed by `app.py::cmd_chunks` were complete thread-level
+chunks, with the title and replies kept together. The samples ranged from the
+complete bike-commute discussion to the complete professor-email discussion;
+none cut a sentence in half. This scored 5/5.
+
+**Criterion 5 — cited source contains the expected answer:**
+
+The report's answer for the laptop question says:
+
+```
+Students say that 16GB of RAM is the one number worth paying for in CS courses.
+
+Source: thread_laptop_specs.txt
+```
+
+Checking the cited filename against each retrieved document showed the expected
+phrase in the cited source for all five questions in all three runs: 5/5 each.
 
 <!-- Underneath, paste the REAL output for each criterion from one of your
      runs — the actual text your system produced, not a description of it.
@@ -278,11 +339,11 @@ and a filename for supported answers.
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | Retrieved chunks contain the answer | MET | All three runs had the answer-bearing chunk for all 5 questions. |
+| 2 | Every answer names a source | MET | All 15 generated answers named a source document. |
+| 3 | Gate stops out-of-corpus questions | MET | The gate refused 5/5 out-of-scope questions. |
+| 4 | Sampled chunks express complete thoughts | MET | All 5 sampled chunks were complete thread-level thoughts. |
+| 5 | Cited source contains the expected answer | MET | Every cited file contained the expected answer phrase. |
 
 ## Diagnoses
 
