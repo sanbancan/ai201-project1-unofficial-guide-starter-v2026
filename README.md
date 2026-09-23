@@ -228,6 +228,14 @@ showed a gap between 0.4806 and 0.8280, so I chose a 0.65 cutoff and tightened
 the grounding instruction to require an exact refusal for unsupported answers
 and a filename for supported answers.
 
+**3.**
+
+For the improvement unit, I asked an AI assistant to pressure-test whether
+tightening the relevance cutoff was connected to the diagnosis. It pointed out
+that the distance gap was already wide, so the change might preserve the scores
+without improving them. I lowered the cutoff to 0.60, ran the full after test,
+and kept the result unchanged because the measurement showed no improvement.
+
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
      claims earns nothing.
@@ -443,9 +451,23 @@ test outcome changed.
 
      Milestone 5. -->
 
+No criterion was missed after the fix, so there is no failed criterion that
+needs a new implementation. The remaining risk is that the evaluation has only
+five questions and no `scorer.py`; the 5/5 judgments were made by reading the
+answers and checking their source files. I would add an automated scorer and a
+larger set of questions before claiming the system generalizes beyond this
+corpus. I stopped here because the requested before/after measurement was
+complete, and the stricter cutoff changed no test outcome.
+
 ## What I'd Do Differently
 
 <!-- Knowing what you know now — which of your five criteria would you write
      differently, and why?
 
      Milestone 5. -->
+
+I would rewrite criterion 1 as a 5/5 target with an explicit top-k boundary:
+"For all 5 test questions, at least one of the top 5 retrieved chunks contains
+the expected answer." The original 4/5 target was met comfortably in every
+run, so the revised version would make the strong result a more demanding test
+while remaining directly measurable.
