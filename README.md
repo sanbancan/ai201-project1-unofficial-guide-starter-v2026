@@ -365,6 +365,19 @@ phrase in the cited source for all five questions in all three runs: 5/5 each.
 
      Milestone 3. -->
 
+I missed nothing in the before evaluation, so there is no failed question to
+trace to loading, chunking, embedding, retrieval, or generation. All five
+criteria scored 5/5 in each of the three runs. The pattern is consistent: the
+advice-thread documents were short enough to remain complete chunks, the top
+retrieved source contained each expected answer, and the gate separated the
+five unrelated questions from the corpus.
+
+The targets were somewhat safe. Criteria 1, 3, 4, and 5 each allowed one miss
+but had no misses, while criterion 2 already required 5/5. I would tighten
+criterion 1 for a future evaluation to: "For all 5 of my 5 test questions, the
+retrieved chunks include one that contains the answer." That tests the observed
+strength without changing the original target after seeing the results.
+
 ## The Improvement
 
 **What I changed:**
